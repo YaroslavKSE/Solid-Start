@@ -1,3 +1,9 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using FSMS.System;
 
-Console.WriteLine("Hello, World!");
+var inputHandler = new InputHandler();
+
+while (true)
+{
+    var input = Console.ReadLine();
+    if (input != null) inputHandler.ProcessInput(input);
+}
