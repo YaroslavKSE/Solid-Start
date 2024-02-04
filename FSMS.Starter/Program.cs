@@ -76,7 +76,7 @@ namespace FSMS.Starter
             
             var actionCommand = new Command("action", "Perform an action on a file")
             {
-                new Argument<string>("action_name", "The action to perform"),
+                new Argument<string>("actionName", "The action to perform"),
                 new Argument<string>("shortcut", "The shortcut name of the file")
             };
             
