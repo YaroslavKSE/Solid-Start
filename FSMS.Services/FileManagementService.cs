@@ -51,5 +51,9 @@ namespace FSMS.Services
             }
             return _files;
         }
+
+        public FileModel GetFileByShortcut(string shortcut)
+        {
+            return _files.FirstOrDefault(f => f.Shortcut == shortcut);        }
     }
 }

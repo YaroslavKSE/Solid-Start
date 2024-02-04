@@ -39,6 +39,7 @@
         <Reference Include="System.Xml"/>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="Interfaces\IFileAction.cs" />
         <Compile Include="Interfaces\IFileManagementService.cs" />
         <Compile Include="Models\FileModel.cs" />
         <Compile Include="Properties\AssemblyInfo.cs"/>

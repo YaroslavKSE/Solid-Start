@@ -8,5 +8,6 @@ namespace FSMS.Core.Interfaces
         void AddFile(string filename, string shortcut = null);
         void RemoveFile(string shortcut);
         IEnumerable<FileModel> ListFiles();
+        FileModel GetFileByShortcut(string shortcut);
     }
 }
