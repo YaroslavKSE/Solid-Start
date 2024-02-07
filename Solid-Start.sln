@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FSMS.Services", "FSMS.Servi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FSMS.Starter", "FSMS.Starter\FSMS.Starter.csproj", "{2B4A7EDB-7A46-46D2-B70C-80456F26F96D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DI.Core", "DI.Core\DI.Core.csproj", "{A17DF4D0-B2F4-4438-996F-1A165995163B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{2B4A7EDB-7A46-46D2-B70C-80456F26F96D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B4A7EDB-7A46-46D2-B70C-80456F26F96D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B4A7EDB-7A46-46D2-B70C-80456F26F96D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A17DF4D0-B2F4-4438-996F-1A165995163B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A17DF4D0-B2F4-4438-996F-1A165995163B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A17DF4D0-B2F4-4438-996F-1A165995163B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A17DF4D0-B2F4-4438-996F-1A165995163B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

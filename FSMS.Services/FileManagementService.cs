@@ -1,8 +1,5 @@
 ﻿using FSMS.Core.Interfaces;
 using FSMS.Core.Models;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace FSMS.Services
 {
@@ -23,7 +20,7 @@ namespace FSMS.Services
             // Check if the file already exists in the list
             if (_files.Any(f => f.Shortcut == (shortcut ?? filename)))
             {
-                System.Console.WriteLine("A file with this shortcut already exists.");
+                Console.WriteLine("A file with this shortcut already exists.");
                 return;
             }
 
@@ -35,7 +32,7 @@ namespace FSMS.Services
             };
             _files.Add(file);
             _persistenceHelper.SaveState(_files);
-            System.Console.WriteLine($"File added successfully: {file.Shortcut}");
+            Console.WriteLine($"File added successfully: {file.Shortcut}");
         }
 
         public void RemoveFile(string shortcut)
@@ -44,11 +41,11 @@ namespace FSMS.Services
             if (file != null)
             {
                 _files.Remove(file);
-                System.Console.WriteLine($"File removed: {shortcut}");
+                Console.WriteLine($"File removed: {shortcut}");
             }
             else
             {
-                System.Console.WriteLine("File not found.");
+                Console.WriteLine("File not found.");
             }
             _persistenceHelper.SaveState(_files);
         }
@@ -57,7 +54,7 @@ namespace FSMS.Services
         {
             if (!_files.Any())
             {
-                System.Console.WriteLine("No files added yet.");
+                Console.WriteLine("No files added yet.");
             }
             return _files;
         }

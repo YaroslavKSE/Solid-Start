@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using FSMS.Core.Models;
+﻿using FSMS.Core.Models;
 
 namespace FSMS.Core.Interfaces
 {
