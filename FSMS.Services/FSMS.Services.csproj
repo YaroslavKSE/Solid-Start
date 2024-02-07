@@ -69,6 +69,7 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="CsvFileAction.cs" />
+        <Compile Include="DefaultFileAction.cs" />
         <Compile Include="FileActionFactory.cs" />
         <Compile Include="FileManagementService.cs" />
         <Compile Include="JsonFileAction.cs" />

@@ -1,21 +1,23 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
+using FSMS.Core.Interfaces;
 using FSMS.Core.Models;
 
-namespace FSMS.Core.Helpers
+namespace FSMS.Core.Helpers 
 {
-    public static class PersistenceHelper
+    public class PersistenceHelper : IState
     {
         private const string StateFilePath = "FileSystemsState.json";
 
-        public static void SaveState(IEnumerable<FileModel> files)
+        public void SaveState(IEnumerable<FileModel> files)
         {
-            var options = new JsonSerializerOptions {WriteIndented = true};
+            var options = new JsonSerializerOptions { WriteIndented = true };
             var jsonString = JsonSerializer.Serialize(files, options);
             File.WriteAllText(StateFilePath, jsonString);
         }
-        public static IEnumerable<FileModel> LoadState()
+
+        public IEnumerable<FileModel> LoadState()
         {
             if (!File.Exists(StateFilePath))
             {

@@ -1,5 +1,6 @@
 ﻿using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
+using FSMS.Core.Helpers;
 using FSMS.Services;
 
 namespace FSMS.Starter
@@ -8,29 +9,34 @@ namespace FSMS.Starter
     {
         static void Main(string[] args)
         {
+            // Register services as needed
+            var persistenceHelper = new PersistenceHelper();
+            
+            var fileManagementService = new FileManagementService(persistenceHelper);
+            
             // Setup commands
             var rootCommand = new RootCommand("File Management System");
-
+            
             var addCommand = new Command("add", "Add a file to the system")
             {
                 new Argument<string>("filename", "The full path of the file"),
                 new Option<string>("--shortcut", "A shortcut name for the file")
             };
             addCommand.Handler = CommandHandler.Create<string, string>((filename, shortcut) =>
-                ServiceContainer.FileManagementService.AddFile(filename, shortcut));
+                fileManagementService.AddFile(filename, shortcut));
 
             var removeCommand = new Command("remove", "Remove a file from the system")
             {
                 new Argument<string>("shortcut", "The shortcut name of the file to remove")
             };
             removeCommand.Handler = CommandHandler.Create<string>((shortcut) =>
-                ServiceContainer.FileManagementService.RemoveFile(shortcut));
+                fileManagementService.RemoveFile(shortcut));
 
             var listCommand = new Command("list", "List all files in the system")
             {
                 Handler = CommandHandler.Create(() =>
                 {
-                    var files = ServiceContainer.FileManagementService.ListFiles();
+                    var files = fileManagementService.ListFiles();
                     var fileModels = files.ToList();
                     if (fileModels.Count == 0)
                     {
@@ -53,7 +59,7 @@ namespace FSMS.Starter
             
             optionsCommand.Handler = CommandHandler.Create<string>((shortcut) =>
             {
-                var file = ServiceContainer.FileManagementService.GetFileByShortcut(shortcut);
+                var file = fileManagementService.GetFileByShortcut(shortcut);
                 if (file == null)
                 {
                     Console.WriteLine("File not found.");
@@ -82,7 +88,7 @@ namespace FSMS.Starter
             
             actionCommand.Handler = CommandHandler.Create<string, string>((actionName, shortcut) =>
             {
-                var file = ServiceContainer.FileManagementService.GetFileByShortcut(shortcut);
+                var file = fileManagementService.GetFileByShortcut(shortcut);
                 if (file == null)
                 {
                     Console.WriteLine("File not found.");
@@ -90,11 +96,6 @@ namespace FSMS.Starter
                 }
                 
                 var fileAction = FileActionFactory.GetFileAction(file.Path);
-                if (fileAction == null)
-                {
-                    Console.WriteLine("Unsupported file type.");
-                    return;
-                }
 
                 switch (actionName.ToLower())
                 {
@@ -105,9 +106,9 @@ namespace FSMS.Starter
                         fileAction.Print(file.Path);
                         break;
                     case "summary":
-                        if (fileAction is TextFileAction)
+                        if (fileAction is TextFileAction action)
                         {
-                            ((TextFileAction)fileAction).Summarize(file.Path);
+                            action.Summarize(file.Path);
                         }
                         else
                         {
@@ -115,14 +116,14 @@ namespace FSMS.Starter
                         }
                         break;
                     case "validate":
-                        if (fileAction is CsvFileAction)
+                        if (fileAction is CsvFileAction csvFileAction)
                         {
-                            ((CsvFileAction)fileAction).Validate(file.Path);
+                            csvFileAction.Validate(file.Path);
                         }
 
-                        if (fileAction is JsonFileAction)
+                        if (fileAction is JsonFileAction jsonFileAction)
                         {
-                            ((JsonFileAction)fileAction).Validate(file.Path);
+                            jsonFileAction.Validate(file.Path);
                         }
                         else
                         {

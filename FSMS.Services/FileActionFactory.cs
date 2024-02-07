@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using FSMS.Core.Interfaces;
 
 namespace FSMS.Services
@@ -18,8 +17,7 @@ namespace FSMS.Services
                 case ".json":
                     return new JsonFileAction();
                 default:
-                    // Console.WriteLine("Not supported file");
-                    return null; 
+                    return new DefaultFileAction();
             }
         }
     }

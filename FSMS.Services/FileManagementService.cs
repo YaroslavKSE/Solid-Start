@@ -3,13 +3,20 @@ using FSMS.Core.Models;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using FSMS.Core.Helpers;
 
 namespace FSMS.Services
 {
     public class FileManagementService : IFileManagementService
     {
-        private readonly List<FileModel> _files = PersistenceHelper.LoadState().ToList();
+        private readonly List<FileModel> _files;
+        private readonly IState _persistenceHelper;
+
+        public FileManagementService(IState persistenceHelper)
+        {
+            _persistenceHelper = persistenceHelper;
+            _files = _persistenceHelper.LoadState().ToList();
+        }
+        
 
         public void AddFile(string filename, string shortcut = null)
         {
@@ -27,7 +34,7 @@ namespace FSMS.Services
                 Path = filename // Assuming full path is provided for simplicity
             };
             _files.Add(file);
-            PersistenceHelper.SaveState(_files);
+            _persistenceHelper.SaveState(_files);
             System.Console.WriteLine($"File added successfully: {file.Shortcut}");
         }
 
@@ -43,7 +50,7 @@ namespace FSMS.Services
             {
                 System.Console.WriteLine("File not found.");
             }
-            PersistenceHelper.SaveState(_files);
+            _persistenceHelper.SaveState(_files);
         }
 
         public IEnumerable<FileModel> ListFiles()
