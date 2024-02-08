@@ -1,5 +1,7 @@
 ﻿using System.CommandLine;
+using System.CommandLine.Builder;
 using System.CommandLine.NamingConventionBinder;
+using System.CommandLine.Parsing;
 using DI.Core;
 using FSMS.Core.Helpers;
 using FSMS.Core.Interfaces;
@@ -9,7 +11,7 @@ namespace FSMS.Starter
 {
     internal static class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             // Initialize DI container
             var container = new DiContainer();
@@ -17,19 +19,43 @@ namespace FSMS.Starter
             // Register services
             container.Register<IState, PersistenceHelper>(Scope.Singleton);
             container.Register<IFileManagementService, FileManagementService>(Scope.Singleton);
+            container.Register<IProfileManager, ProfileManager>(Scope.Singleton);
+
 
             // Resolve services
             var fileManagementService = container.Resolve<IFileManagementService>();
+            var profileManager = container.Resolve<IProfileManager>();
 
             // Setup commands
             var rootCommand = new RootCommand("File Management System");
-            ConfigureCommands(rootCommand, fileManagementService);
+            ConfigureCommands(rootCommand, fileManagementService, profileManager);
+            
+            // Setup a command line builder and parser
+            var commandLineBuilder = new CommandLineBuilder(rootCommand)
+                .UseDefaults()
+                .Build();
 
-            // Parse and invoke commands from the args
-            rootCommand.InvokeAsync(args).Wait();
-            return;
+            Console.WriteLine("File Management System started. Enter 'exit' to quit.");
 
-            static void ConfigureCommands(RootCommand rootCommand, IFileManagementService fileManagementService)
+            // Start the interactive loop
+            while (true)
+            {
+                Console.Write("> ");
+                var input = Console.ReadLine();
+                
+                // Exit condition
+                if (input?.Trim().ToLower() == "exit")
+                {
+                    break;
+                }
+
+                // Parse and invoke the command
+                await commandLineBuilder.InvokeAsync(input ?? string.Empty);
+            }
+        
+
+            static void ConfigureCommands(RootCommand rootCommand, IFileManagementService fileManagementService, 
+                IProfileManager profileManagerService)
             {
                 var addCommand = new Command("add", "Add a file to the system")
                 {
@@ -62,6 +88,12 @@ namespace FSMS.Starter
                         }
                     })
                 };
+                
+                var loginCommand = new Command("login", "Login or switch to a profile")
+                {
+                    new Argument<string>("profileName", "Name of the profile")
+                };
+                loginCommand.Handler = CommandHandler.Create<string>(profileManagerService.LoginOrCreateProfile);
 
                 var optionsCommand =
                     new Command("options", "Show a list of available actions to perform on the specified file")
@@ -130,18 +162,17 @@ namespace FSMS.Starter
 
                             break;
                         case "validate":
-                            if (fileAction is CsvFileAction csvFileAction)
+                            switch (fileAction)
                             {
-                                csvFileAction.Validate(file.Path);
-                            }
-
-                            if (fileAction is JsonFileAction jsonFileAction)
-                            {
-                                jsonFileAction.Validate(file.Path);
-                            }
-                            else
-                            {
-                                Console.WriteLine("Summary action is not supported for this file type.");
+                                case CsvFileAction csvFileAction:
+                                    csvFileAction.Validate(file.Path);
+                                    break;
+                                case JsonFileAction jsonFileAction:
+                                    jsonFileAction.Validate(file.Path);
+                                    break;
+                                default:
+                                    Console.WriteLine("Summary action is not supported for this file type.");
+                                    break;
                             }
 
                             break;
@@ -157,6 +188,7 @@ namespace FSMS.Starter
                 rootCommand.AddCommand(listCommand);
                 rootCommand.AddCommand(optionsCommand);
                 rootCommand.AddCommand(actionCommand);
+                rootCommand.AddCommand(loginCommand);
             }
         }
     }

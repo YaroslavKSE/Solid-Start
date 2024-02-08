@@ -5,20 +5,23 @@ namespace FSMS.Services
 {
     public class FileManagementService : IFileManagementService
     {
-        private readonly List<FileModel> _files;
         private readonly IState _persistenceHelper;
-
-        public FileManagementService(IState persistenceHelper)
+        private readonly IProfileManager _profileManager;
+        
+        public FileManagementService(IState persistenceHelper, IProfileManager profileManager)
         {
             _persistenceHelper = persistenceHelper;
-            _files = _persistenceHelper.LoadState().ToList();
+            _profileManager = profileManager;
         }
         
 
-        public void AddFile(string filename, string shortcut = null)
+        public void AddFile(string filename, string? shortcut = null)
         {
+            // Access the current profile's files
+            var currentProfile = _profileManager.GetCurrentProfile();
+            var currentProfileFiles = currentProfile.Files;
             // Check if the file already exists in the list
-            if (_files.Any(f => f.Shortcut == (shortcut ?? filename)))
+            if (currentProfileFiles.Any(f => f.Shortcut == (shortcut ?? filename)))
             {
                 Console.WriteLine("A file with this shortcut already exists.");
                 return;
@@ -30,38 +33,42 @@ namespace FSMS.Services
                 Shortcut = shortcut ?? filename,
                 Path = filename // Assuming full path is provided for simplicity
             };
-            _files.Add(file);
-            _persistenceHelper.SaveState(_files);
+            currentProfileFiles.Add(file);
+            _persistenceHelper.SaveState(currentProfileFiles, currentProfile.ProfileName);
             Console.WriteLine($"File added successfully: {file.Shortcut}");
         }
 
         public void RemoveFile(string shortcut)
         {
-            var file = _files.FirstOrDefault(f => f.Shortcut == shortcut);
+            var currentProfile = _profileManager.GetCurrentProfile();
+            var currentProfileFiles = currentProfile.Files;
+            var file = currentProfileFiles.FirstOrDefault(f => f.Shortcut == shortcut);
             if (file != null)
             {
-                _files.Remove(file);
+                currentProfileFiles.Remove(file);
                 Console.WriteLine($"File removed: {shortcut}");
             }
             else
             {
                 Console.WriteLine("File not found.");
             }
-            _persistenceHelper.SaveState(_files);
+            _persistenceHelper.SaveState(currentProfileFiles, currentProfile.ProfileName);
         }
 
         public IEnumerable<FileModel> ListFiles()
         {
-            if (!_files.Any())
-            {
-                Console.WriteLine("No files added yet.");
-            }
-            return _files;
+            var files = _profileManager.GetCurrentProfile().Files;
+            // if (files.Count == 0)
+            // {
+            //     Console.WriteLine("No files added yet.");
+            // }
+            return files;
         }
 
         public FileModel GetFileByShortcut(string shortcut)
         {
-            return _files.FirstOrDefault(f => f.Shortcut == shortcut);
+            // Access the current profile's files
+            return _profileManager.GetCurrentProfile().Files.FirstOrDefault(f => f.Shortcut == shortcut);
         }
     }
 }
