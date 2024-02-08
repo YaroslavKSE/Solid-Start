@@ -17,7 +17,7 @@ namespace FSMS.Starter
             var container = new DiContainer();
 
             // Register services
-            container.Register<IState, PersistenceHelper>(Scope.Singleton);
+            container.Register<IStateManager, PersistenceHelper>(Scope.Singleton);
             container.Register<IFileManagementService, FileManagementService>(Scope.Singleton);
             container.Register<IProfileManager, ProfileManager>(Scope.Singleton);
 
@@ -171,18 +171,16 @@ namespace FSMS.Starter
                                     jsonFileAction.Validate(file.Path);
                                     break;
                                 default:
-                                    Console.WriteLine("Summary action is not supported for this file type.");
+                                    Console.WriteLine("Validate action is not supported for this file type.");
                                     break;
                             }
 
                             break;
-
                         default:
                             Console.WriteLine("Unknown action.");
                             break;
                     }
                 });
-
                 rootCommand.AddCommand(addCommand);
                 rootCommand.AddCommand(removeCommand);
                 rootCommand.AddCommand(listCommand);

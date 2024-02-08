@@ -4,7 +4,7 @@ using FSMS.Core.Models;
 
 namespace FSMS.Core.Helpers 
 {
-    public class PersistenceHelper : IState
+    public class PersistenceHelper : IStateManager
     {
         private const string StateFilesDirectory = "StateFiles";
         public PersistenceHelper()

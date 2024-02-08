@@ -5,10 +5,10 @@ namespace FSMS.Services
 {
     public class FileManagementService : IFileManagementService
     {
-        private readonly IState _persistenceHelper;
+        private readonly IStateManager _persistenceHelper;
         private readonly IProfileManager _profileManager;
         
-        public FileManagementService(IState persistenceHelper, IProfileManager profileManager)
+        public FileManagementService(IStateManager persistenceHelper, IProfileManager profileManager)
         {
             _persistenceHelper = persistenceHelper;
             _profileManager = profileManager;
