@@ -28,9 +28,9 @@ namespace FSMS.Services
             _currentProfile = profile;
         }
 
-        public UserProfile GetCurrentProfile()
+        public UserProfile? GetCurrentProfile()
         {
-            return _currentProfile ?? throw new InvalidOperationException("No profile is currently active. Please login.");
+            return _currentProfile;
         }
     }
 }
