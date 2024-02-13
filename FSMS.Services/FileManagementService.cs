@@ -20,6 +20,19 @@ namespace FSMS.Services
             // Access the current profile's files
             var currentProfile = _profileManager.GetCurrentProfile();
             var currentProfileFiles = currentProfile.Files;
+            
+            var newFileSize = new FileInfo(filename).Length; // Get the size of the new file
+            var totalSizeAfterAdding = GetTotalSizeOfFiles() + newFileSize;
+
+            // Check for plan limits
+            var currentPlan = _profileManager.GetCurrentPlan();
+            if (GetTotalNumberOfFiles() >= currentPlan.MaxFiles || totalSizeAfterAdding > 
+                currentPlan.MaxStorageInMb * 1024 * 1024)
+            {
+                Console.WriteLine("Cannot add file. Exceeds the plan's limit.");
+                return;
+            }
+            
             // Check if the file already exists in the list
             if (currentProfileFiles.Any(f => f.Shortcut == (shortcut ?? filename)))
             {
@@ -34,7 +47,7 @@ namespace FSMS.Services
                 Path = filename // Assuming full path is provided for simplicity
             };
             currentProfileFiles.Add(file);
-            _persistenceHelper.SaveState(currentProfileFiles, currentProfile.ProfileName);
+            _persistenceHelper.SaveState(currentProfile);
             Console.WriteLine($"File added successfully: {file.Shortcut}");
         }
 
@@ -52,16 +65,12 @@ namespace FSMS.Services
             {
                 Console.WriteLine("File not found.");
             }
-            _persistenceHelper.SaveState(currentProfileFiles, currentProfile.ProfileName);
+            _persistenceHelper.SaveState(currentProfile);
         }
 
         public IEnumerable<FileModel> ListFiles()
         {
             var files = _profileManager.GetCurrentProfile().Files;
-            // if (files.Count == 0)
-            // {
-            //     Console.WriteLine("No files added yet.");
-            // }
             return files;
         }
 
@@ -69,6 +78,19 @@ namespace FSMS.Services
         {
             // Access the current profile's files
             return _profileManager.GetCurrentProfile().Files.FirstOrDefault(f => f.Shortcut == shortcut);
+        }
+
+        public int GetTotalNumberOfFiles()
+        {
+            var currentProfile = _profileManager.GetCurrentProfile();
+            return currentProfile.Files.Count;
+        }
+
+        public long GetTotalSizeOfFiles()
+        {
+            var currentProfile = _profileManager.GetCurrentProfile();
+            // Assuming FileModel has a Size property in bytes
+            return currentProfile.Files.Sum(file => file.Path.Length);
         }
     }
 }

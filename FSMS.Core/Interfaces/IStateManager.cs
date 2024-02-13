@@ -4,7 +4,7 @@ namespace FSMS.Core.Interfaces
 {
     public interface IStateManager
     {
-        void SaveState(IEnumerable<FileModel> files, string profileName);
-        IEnumerable<FileModel> LoadState(string profileName);
+        void SaveState(UserProfile profile);
+        UserProfile  LoadState(string profileName);
     }
 }

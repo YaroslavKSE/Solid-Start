@@ -22,4 +22,8 @@
       <ProjectReference Include="..\FSMS.Services\FSMS.Services.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="StateFiles\" />
+    </ItemGroup>
+
 </Project>

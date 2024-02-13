@@ -15,26 +15,29 @@ namespace FSMS.Core.Helpers
                 Directory.CreateDirectory(StateFilesDirectory);
             }
         }
-        
-        public void SaveState(IEnumerable<FileModel> files, string profileName)
+
+        public void SaveState(UserProfile profile)
         {
-            var stateFilePath = GetStateFilePath(profileName);
-            var options = new JsonSerializerOptions { WriteIndented = true };
-            var jsonString = JsonSerializer.Serialize(files, options);
+            var stateFilePath = GetStateFilePath(profile.ProfileName);
+            var options = new JsonSerializerOptions {WriteIndented = true};
+            var jsonString = JsonSerializer.Serialize(profile, options); // Serialize the entire profile
             File.WriteAllText(stateFilePath, jsonString);
         }
 
-        public IEnumerable<FileModel> LoadState(string profileName)
+        public UserProfile LoadState(string profileName)
         {
             var stateFilePath = GetStateFilePath(profileName);
             if (!File.Exists(stateFilePath))
             {
-                return new List<FileModel>();
+                // Return a new profile with default settings if no saved state exists
+                return new UserProfile { ProfileName = profileName, PlanName = "Basic", Files = new List<FileModel>() };
             }
 
             var jsonString = File.ReadAllText(stateFilePath);
-            return JsonSerializer.Deserialize<IEnumerable<FileModel>>(jsonString) ?? new List<FileModel>();
+            return JsonSerializer.Deserialize<UserProfile>(jsonString) ?? 
+                   new UserProfile { ProfileName = profileName, PlanName = "Basic", Files = new List<FileModel>() };
         }
+        
         // Generates a unique file path for each profile
         private string GetStateFilePath(string profileName)
         {
