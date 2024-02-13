@@ -19,7 +19,7 @@ namespace FSMS.Services
         {
             // Access the current profile's files
             var currentProfile = _profileManager.GetCurrentProfile();
-            var currentProfileFiles = currentProfile.Files;
+            var currentProfileFiles = currentProfile?.Files;
             
             var newFileSize = new FileInfo(filename).Length; // Get the size of the new file
             var totalSizeAfterAdding = GetTotalSizeOfFiles() + newFileSize;
@@ -34,7 +34,7 @@ namespace FSMS.Services
             }
             
             // Check if the file already exists in the list
-            if (currentProfileFiles.Any(f => f.Shortcut == (shortcut ?? filename)))
+            if (currentProfileFiles != null && currentProfileFiles.Any(f => f.Shortcut == (shortcut ?? filename)))
             {
                 Console.WriteLine("A file with this shortcut already exists.");
                 return;

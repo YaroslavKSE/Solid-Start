@@ -98,7 +98,15 @@ public class CommandConfigurator
             new Argument<string>("actionName", "The action to perform"),
             new Argument<string>("shortcut", "The shortcut name of the file")
         };
+        var changePlanCommand = new Command("change_plan", "Change the user's current plan")
+        {
+            new Argument<string>("newPlanName", "The name of the new plan to switch to")
+        };
+        changePlanCommand.Handler = CommandHandler.Create<string>(profileManager.ChangeUserPlan);
 
+        rootCommand.AddCommand(changePlanCommand);
+
+        
         actionCommand.Handler = CommandHandler.Create<string, string>((actionName, shortcut) =>
         {
             if (!CommandHelper.EnsureLoggedIn(profileManager)) return;

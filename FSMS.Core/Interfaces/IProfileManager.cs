@@ -7,6 +7,6 @@ namespace FSMS.Core.Interfaces
         void LoginOrCreateProfile(string profileName);
         UserProfile? GetCurrentProfile();
         public IPlan GetCurrentPlan();
-        void ChangePlan(string profileName, string newPlanName);
+        void ChangeUserPlan(string newPlanName);
     }
 }

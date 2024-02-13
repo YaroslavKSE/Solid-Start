@@ -44,28 +44,52 @@ namespace FSMS.Services
             return PlanFactory.CreatePlan(currentProfile.PlanName);
         }
 
-        public void ChangePlan(string profileName, string newPlanName)
+        public void ChangeUserPlan(string newPlanName)
         {
-            var profile = _profiles.FirstOrDefault(p => p.ProfileName == profileName);
-            if (profile == null)
+            var currentProfile = GetCurrentProfile();
+            if (currentProfile == null)
             {
-                Console.WriteLine("Profile not found.");
+                Console.WriteLine("No profile is currently active.");
                 return;
             }
 
-            // Example logic to check plan constraints before changing
             var newPlan = PlanFactory.CreatePlan(newPlanName);
-            if (!CanChangeToPlan(profile, newPlan))
+            if (!CanChangeToPlan(currentProfile, newPlan))
             {
-                Console.WriteLine("Cannot change to the requested plan due to constraints.");
+                Console.WriteLine($"Cannot change to plan '{newPlanName}'. It exceeds the new plan's limits.");
                 return;
             }
+
+            currentProfile.PlanName = newPlanName;
+            Console.WriteLine($"Plan successfully changed to {newPlanName}.");
+            // Don't forget to save the updated profile
+            _persistenceHelper.SaveState(currentProfile);
         }
         private bool CanChangeToPlan(UserProfile profile, IPlan newPlan)
         {
-            // Implement logic to check if the profile meets the constraints of the new plan
-            // This could involve checking the number of files, total storage, etc.
-            return true; // Placeholder
+            // Calculate total file size in MB
+            long totalSizeInBytes = profile.Files.Sum(file => 
+            {
+                try
+                {
+                    return new FileInfo(file.Path).Length;
+                }
+                catch (FileNotFoundException)
+                {
+                    Console.WriteLine($"Warning: File '{file.Path}' not found.");
+                    return 0L; // Consider files that can't be found as having no size, adjust as necessary
+                }
+            });
+
+            long totalSizeInMb = totalSizeInBytes / (1024 * 1024);
+
+            // Check against new plan limits
+            if (profile.Files.Count > newPlan.MaxFiles || totalSizeInMb > newPlan.MaxStorageInMb)
+            {
+                return false; // Profile does not meet the constraints of the new plan
+            }
+
+            return true; // Profile meets the constraints
         }
     }
 }
