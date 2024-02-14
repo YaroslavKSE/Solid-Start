@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using FSMS.Core.Interfaces;
+﻿using FSMS.Core.Interfaces;
 
 namespace FSMS.Services
 {
