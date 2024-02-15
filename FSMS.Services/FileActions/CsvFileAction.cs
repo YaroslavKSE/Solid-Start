@@ -1,5 +1,6 @@
 ﻿using FSMS.Core.Interfaces;
 
+// Rework, because not single responsible
 namespace FSMS.Services
 {
     public class CsvFileAction : IFileAction

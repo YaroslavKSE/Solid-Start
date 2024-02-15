@@ -5,8 +5,8 @@ using FSMS.Core.Interfaces;
 using FSMS.Services;
 
 namespace FSMS.Starter;
-
-public class CommandConfigurator
+// Rework, maybe use annotations, or reflections
+public class CommandConfigurator // use DI container. 
 {
     public static void ConfigureCommands(RootCommand rootCommand, IFileManagementService fileManagementService,
         IProfileManager profileManager)
@@ -18,7 +18,7 @@ public class CommandConfigurator
         };
         addCommand.Handler = CommandHandler.Create<string, string>((filename, shortcut) =>
         {
-            if (!CommandHelper.EnsureLoggedIn(profileManager)) return;
+            if (!profileManager.EnsureLoggedIn()) return;
             fileManagementService.AddFile(filename, shortcut);
         });
 
@@ -31,7 +31,7 @@ public class CommandConfigurator
 
         removeCommand.Handler = CommandHandler.Create<string>( shortcut =>
         {
-            if (!CommandHelper.EnsureLoggedIn(profileManager)) return;
+            if (!profileManager.EnsureLoggedIn()) return;
             fileManagementService.RemoveFile(shortcut);
         });
 
@@ -39,7 +39,7 @@ public class CommandConfigurator
         {
             Handler = CommandHandler.Create(() =>
             {
-                if (!CommandHelper.EnsureLoggedIn(profileManager)) return;
+                if (!profileManager.EnsureLoggedIn()) return;
                 var files = fileManagementService.ListFiles();
                 var fileModels = files.ToList();
                 if (fileModels.Count == 0)
@@ -69,7 +69,7 @@ public class CommandConfigurator
 
         optionsCommand.Handler = CommandHandler.Create<string>((shortcut) =>
         {
-            if (!CommandHelper.EnsureLoggedIn(profileManager)) return;
+            if (!profileManager.EnsureLoggedIn()) return;
 
             var file = fileManagementService.GetFileByShortcut(shortcut);
             if (file == null)
@@ -109,7 +109,7 @@ public class CommandConfigurator
         
         actionCommand.Handler = CommandHandler.Create<string, string>((actionName, shortcut) =>
         {
-            if (!CommandHelper.EnsureLoggedIn(profileManager)) return;
+            if (!profileManager.EnsureLoggedIn()) return;
 
             var file = fileManagementService.GetFileByShortcut(shortcut);
             if (file == null)

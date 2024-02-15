@@ -1,10 +1,10 @@
 ﻿using FSMS.Core.Interfaces;
 
 namespace FSMS.Core.Helpers;
-
-public class CommandHelper
+//make profile manager extensions
+public static class ProfileManagerExtension
 {
-    public static bool EnsureLoggedIn(IProfileManager profileManager)
+    public static bool EnsureLoggedIn(this IProfileManager profileManager)
     {
         if (profileManager.GetCurrentProfile() == null)
         {

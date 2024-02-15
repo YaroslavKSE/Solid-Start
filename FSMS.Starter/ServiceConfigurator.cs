@@ -13,7 +13,7 @@ public class ServiceConfigurator
     {
         _container = new DiContainer();
 
-        // Register all your services with the DI container here
+        // Register all your services with the DI container
         _container.Register<IStateManager, PersistenceHelper>(Scope.Singleton);
         _container.Register<IFileManagementService, FileManagementService>(Scope.Singleton);
         _container.Register<IProfileManager, ProfileManager>(Scope.Singleton);
