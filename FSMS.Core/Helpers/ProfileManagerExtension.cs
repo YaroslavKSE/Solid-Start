@@ -1,7 +1,7 @@
 ﻿using FSMS.Core.Interfaces;
 
 namespace FSMS.Core.Helpers;
-//make profile manager extensions
+//make profile manager extensions - done
 public static class ProfileManagerExtension
 {
     public static bool EnsureLoggedIn(this IProfileManager profileManager)
