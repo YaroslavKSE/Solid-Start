@@ -2,8 +2,6 @@
 using System.CommandLine.NamingConventionBinder;
 using FSMS.Core.Helpers;
 using FSMS.Core.Interfaces;
-using FSMS.Services;
-using FSMS.Services.FileActions;
 
 namespace FSMS.Starter;
 
@@ -11,7 +9,7 @@ namespace FSMS.Starter;
 public class CommandConfigurator // use DI container. 
 {
     public static void ConfigureCommands(RootCommand rootCommand, IFileManagementService fileManagementService,
-        IProfileManager profileManager, ServiceConfigurator serviceConfigurator)
+        IProfileManager profileManager, IFileActionExecutor fileActionExecutor)
     {
         var addCommand = new Command("add", "Add a file to the system")
         {
@@ -109,7 +107,7 @@ public class CommandConfigurator // use DI container.
             }
 
             // Use the new ExecuteFileAction method to dynamically execute the action
-            serviceConfigurator.ExecuteFileAction(actionName, file.Path);
+            fileActionExecutor.ExecuteFileAction(actionName, file.Path, file.Shortcut);
         });
 
         var changePlanCommand = new Command("change_plan", "Change the user's current plan")
