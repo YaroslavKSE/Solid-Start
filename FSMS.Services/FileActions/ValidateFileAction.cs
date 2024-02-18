@@ -10,7 +10,7 @@ public class ValidateCsvFileAction : IFileAction
     public bool CanHandle(string actionName, string filePath)
     {
         var extension = Path.GetExtension(filePath);
-        return actionName.Equals("validate", StringComparison.OrdinalIgnoreCase) && 
+        return actionName.Equals("validate", StringComparison.OrdinalIgnoreCase) &&
                extension.Equals(".csv", StringComparison.OrdinalIgnoreCase);
     }
 
@@ -41,7 +41,7 @@ public class ValidateJsonFileAction : IFileAction
     public bool CanHandle(string actionName, string filePath)
     {
         var extension = Path.GetExtension(filePath);
-        return actionName.Equals("validate", StringComparison.OrdinalIgnoreCase) && 
+        return actionName.Equals("validate", StringComparison.OrdinalIgnoreCase) &&
                extension.Equals(".json", StringComparison.OrdinalIgnoreCase);
     }
 

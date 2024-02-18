@@ -97,15 +97,6 @@ public class CommandConfigurator // use DI container.
             new Argument<string>("actionName", "The action to perform"),
             new Argument<string>("shortcut", "The shortcut name of the file")
         };
-        var changePlanCommand = new Command("change_plan", "Change the user's current plan")
-        {
-            new Argument<string>("newPlanName", "The name of the new plan to switch to")
-        };
-        changePlanCommand.Handler = CommandHandler.Create<string>(profileManager.ChangeUserPlan);
-
-        rootCommand.AddCommand(changePlanCommand);
-
-
         actionCommand.Handler = CommandHandler.Create<string, string>((actionName, shortcut) =>
         {
             if (!profileManager.EnsureLoggedIn()) return;
@@ -120,12 +111,19 @@ public class CommandConfigurator // use DI container.
             // Use the new ExecuteFileAction method to dynamically execute the action
             serviceConfigurator.ExecuteFileAction(actionName, file.Path);
         });
-        
+
+        var changePlanCommand = new Command("change_plan", "Change the user's current plan")
+        {
+            new Argument<string>("newPlanName", "The name of the new plan to switch to")
+        };
+        changePlanCommand.Handler = CommandHandler.Create<string>(profileManager.ChangeUserPlan);
+
         rootCommand.AddCommand(addCommand);
         rootCommand.AddCommand(removeCommand);
         rootCommand.AddCommand(listCommand);
         rootCommand.AddCommand(optionsCommand);
         rootCommand.AddCommand(actionCommand);
         rootCommand.AddCommand(loginCommand);
+        rootCommand.AddCommand(changePlanCommand);
     }
 }

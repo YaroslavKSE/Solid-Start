@@ -3,13 +3,14 @@ using FSMS.Core.Attributes;
 using FSMS.Core.Interfaces;
 
 namespace FSMS.Services.FileActions;
+
 [FileAction("print", ".txt")]
 public class PrintTextFileAction : IFileAction
 {
     public bool CanHandle(string actionName, string filePath)
     {
         var extension = Path.GetExtension(filePath);
-        return actionName.Equals("print", StringComparison.OrdinalIgnoreCase) && 
+        return actionName.Equals("print", StringComparison.OrdinalIgnoreCase) &&
                extension.Equals(".txt", StringComparison.OrdinalIgnoreCase);
     }
 
@@ -25,7 +26,7 @@ public class PrintCsvFileAction : IFileAction
     public bool CanHandle(string actionName, string filePath)
     {
         var extension = Path.GetExtension(filePath);
-        return actionName.Equals("print", StringComparison.OrdinalIgnoreCase) && 
+        return actionName.Equals("print", StringComparison.OrdinalIgnoreCase) &&
                extension.Equals(".csv", StringComparison.OrdinalIgnoreCase);
     }
 
@@ -43,11 +44,10 @@ public class PrintCsvFileAction : IFileAction
 [FileAction("print", ".json")]
 public class PrintJsonFileAction : IFileAction
 {
-
     public bool CanHandle(string actionName, string filePath)
     {
         var extension = Path.GetExtension(filePath);
-        return actionName.Equals("print", StringComparison.OrdinalIgnoreCase) && 
+        return actionName.Equals("print", StringComparison.OrdinalIgnoreCase) &&
                extension.Equals(".json", StringComparison.OrdinalIgnoreCase);
     }
 
@@ -55,6 +55,6 @@ public class PrintJsonFileAction : IFileAction
     {
         var jsonString = File.ReadAllText(filePath);
         var jsonDocument = JsonDocument.Parse(jsonString);
-        Console.WriteLine(JsonSerializer.Serialize(jsonDocument, new JsonSerializerOptions { WriteIndented = true }));
+        Console.WriteLine(JsonSerializer.Serialize(jsonDocument, new JsonSerializerOptions {WriteIndented = true}));
     }
 }

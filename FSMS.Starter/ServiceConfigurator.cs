@@ -22,9 +22,8 @@ public class ServiceConfigurator
         _container.Register<IStateManager, PersistenceHelper>(Scope.Singleton);
         _container.Register<IProfileManager, ProfileManager>(Scope.Singleton);
         _container.Register<IFileManagementService, FileManagementService>(Scope.Singleton);
-
     }
-    
+
     public void RegisterFileActions()
     {
         // List to hold all discovered types across assemblies
@@ -45,7 +44,7 @@ public class ServiceConfigurator
             _container.Register(type, type, Scope.Singleton); // Adjust based on your DI setup
         }
     }
-    
+
     public void ExecuteFileAction(string actionName, string filePath)
     {
         var actionHandlers = _container.ResolveAll<IFileAction>();
@@ -58,7 +57,7 @@ public class ServiceConfigurator
                 var executeMethod = handler.GetType().GetMethod("Execute");
                 if (executeMethod != null)
                 {
-                    executeMethod.Invoke(handler, new object[] { filePath });
+                    executeMethod.Invoke(handler, new object[] {filePath});
                     actionExecuted = true;
                     break;
                 }

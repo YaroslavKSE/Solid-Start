@@ -7,32 +7,32 @@ namespace FSMS.Services
     {
         private readonly IStateManager _persistenceHelper;
         private readonly IProfileManager _profileManager;
-        
+
         public FileManagementService(IStateManager persistenceHelper, IProfileManager profileManager)
         {
             _persistenceHelper = persistenceHelper;
             _profileManager = profileManager;
         }
-        
+
 
         public void AddFile(string filename, string? shortcut = null)
         {
             // Access the current profile's files
             var currentProfile = _profileManager.GetCurrentProfile();
             var currentProfileFiles = currentProfile?.Files;
-            
+
             var newFileSize = new FileInfo(filename).Length; // Get the size of the new file
             var totalSizeAfterAdding = GetTotalSizeOfFiles() + newFileSize;
 
             // Check for plan limits
             var currentPlan = _profileManager.GetCurrentPlan();
-            if (GetTotalNumberOfFiles() >= currentPlan.MaxFiles || totalSizeAfterAdding > 
+            if (GetTotalNumberOfFiles() >= currentPlan.MaxFiles || totalSizeAfterAdding >
                 currentPlan.MaxStorageInMb * 1024 * 1024)
             {
                 Console.WriteLine("Cannot add file. Exceeds the plan's limit.");
                 return;
             }
-            
+
             // Check if the file already exists in the list
             if (currentProfileFiles != null && currentProfileFiles.Any(f => f.Shortcut == (shortcut ?? filename)))
             {
@@ -65,6 +65,7 @@ namespace FSMS.Services
             {
                 Console.WriteLine("File not found.");
             }
+
             _persistenceHelper.SaveState(currentProfile);
         }
 

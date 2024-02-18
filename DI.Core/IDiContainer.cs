@@ -12,5 +12,6 @@ public interface IDiContainer
 
 public enum Scope
 {
-    Singleton, Transient
+    Singleton,
+    Transient
 }

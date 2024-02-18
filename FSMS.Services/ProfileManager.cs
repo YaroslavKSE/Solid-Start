@@ -13,18 +13,19 @@ namespace FSMS.Services
         {
             _persistenceHelper = persistenceHelper;
         }
-        
+
         public void LoginOrCreateProfile(string profileName)
         {
             var profile = _profiles.FirstOrDefault(p => p.ProfileName == profileName);
             if (profile == null)
             {
-                profile = new UserProfile { ProfileName = profileName, Files = new List<FileModel>() };
+                profile = new UserProfile {ProfileName = profileName, Files = new List<FileModel>()};
                 // Load the profile's files from persistent storage
                 var loadedFiles = _persistenceHelper.LoadState(profileName).Files;
                 profile.Files.AddRange(loadedFiles);
                 _profiles.Add(profile);
             }
+
             _currentProfile = profile;
         }
 
@@ -65,10 +66,11 @@ namespace FSMS.Services
             // Don't forget to save the updated profile
             _persistenceHelper.SaveState(currentProfile);
         }
+
         private bool CanChangeToPlan(UserProfile profile, IPlan newPlan)
         {
             // Calculate total file size in MB
-            long totalSizeInBytes = profile.Files.Sum(file => 
+            long totalSizeInBytes = profile.Files.Sum(file =>
             {
                 try
                 {

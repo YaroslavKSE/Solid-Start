@@ -1,6 +1,7 @@
 ﻿using FSMS.Core.Interfaces;
 
 namespace FSMS.Core.Helpers;
+
 //make profile manager extensions - done
 public static class ProfileManagerExtension
 {
@@ -11,7 +12,7 @@ public static class ProfileManagerExtension
             Console.WriteLine("No profile is currently active. Please login using the 'login' command.");
             return false;
         }
+
         return true;
     }
-
 }
