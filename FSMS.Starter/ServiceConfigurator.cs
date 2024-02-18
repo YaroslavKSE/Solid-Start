@@ -41,7 +41,7 @@ public class ServiceConfigurator
 
         foreach (var type in fileActionTypes)
         {
-            _container.Register(type, type, Scope.Singleton); // Adjust based on your DI setup
+            _container.Register(type, type, Scope.Transient); // Adjust based on your DI setup
         }
     }
 
