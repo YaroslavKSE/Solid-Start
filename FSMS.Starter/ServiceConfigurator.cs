@@ -4,6 +4,7 @@ using FSMS.Core.Attributes;
 using FSMS.Core.Helpers;
 using FSMS.Core.Interfaces;
 using FSMS.Services;
+using FSMS.Services.Factories;
 
 namespace FSMS.Starter;
 
@@ -20,8 +21,12 @@ public class ServiceConfigurator
     {
         // Register all your services with the DI container
         _container.Register<IStateManager, PersistenceHelper>(Scope.Singleton);
+        _container.Register<IEventLogger, JsonFileEventLogger>(Scope.Singleton);
+        _container.Register<IEventLoggingService, EventLoggingService>(Scope.Singleton);
         _container.Register<IProfileManager, ProfileManager>(Scope.Singleton);
         _container.Register<IFileManagementService, FileManagementService>(Scope.Singleton);
+        _container.Register<IFileActionExecutor, FileActionExecutor>(Scope.Singleton);
+        _container.Register<IFileActionFactory, FileActionFactory>(Scope.Singleton);
     }
 
     public void RegisterFileActions()
@@ -44,32 +49,6 @@ public class ServiceConfigurator
             _container.Register(type, type, Scope.Transient); // Adjust based on your DI setup
         }
     }
-
-    public void ExecuteFileAction(string actionName, string filePath)
-    {
-        var actionHandlers = _container.ResolveAll<IFileAction>();
-
-        bool actionExecuted = false;
-        foreach (var handler in actionHandlers)
-        {
-            if (handler.CanHandle(actionName, filePath))
-            {
-                var executeMethod = handler.GetType().GetMethod("Execute");
-                if (executeMethod != null)
-                {
-                    executeMethod.Invoke(handler, new object[] {filePath});
-                    actionExecuted = true;
-                    break;
-                }
-            }
-        }
-
-        if (!actionExecuted)
-        {
-            Console.WriteLine("Action not supported for this file type.");
-        }
-    }
-
 
     public static T Resolve<T>()
     {

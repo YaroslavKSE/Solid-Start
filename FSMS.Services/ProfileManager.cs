@@ -1,5 +1,6 @@
 ﻿using FSMS.Core.Interfaces;
 using FSMS.Core.Models;
+using FSMS.Services.Factories;
 
 namespace FSMS.Services
 {
@@ -8,10 +9,12 @@ namespace FSMS.Services
         private readonly List<UserProfile> _profiles = new();
         private UserProfile _currentProfile;
         private readonly IStateManager _persistenceHelper;
+        private readonly IEventLoggingService _eventLoggingService;
 
-        public ProfileManager(IStateManager persistenceHelper)
+        public ProfileManager(IStateManager persistenceHelper, IEventLoggingService eventLoggingService)
         {
             _persistenceHelper = persistenceHelper;
+            _eventLoggingService = eventLoggingService;
         }
 
         public void LoginOrCreateProfile(string profileName)
@@ -27,6 +30,7 @@ namespace FSMS.Services
             }
 
             _currentProfile = profile;
+            _eventLoggingService.LogUserLoggedIn(profileName);
         }
 
         public UserProfile? GetCurrentProfile()
@@ -65,6 +69,7 @@ namespace FSMS.Services
             Console.WriteLine($"Plan successfully changed to {newPlanName}.");
             // Don't forget to save the updated profile
             _persistenceHelper.SaveState(currentProfile);
+            _eventLoggingService.LogPlanChanged(currentProfile.PlanName, newPlanName);
         }
 
         private bool CanChangeToPlan(UserProfile profile, IPlan newPlan)

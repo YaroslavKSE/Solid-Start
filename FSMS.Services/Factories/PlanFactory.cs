@@ -1,7 +1,7 @@
 ﻿using FSMS.Core.Interfaces;
 using FSMS.Core.Models;
 
-namespace FSMS.Services;
+namespace FSMS.Services.Factories;
 
 public class PlanFactory
 {

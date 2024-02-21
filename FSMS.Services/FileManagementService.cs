@@ -7,11 +7,15 @@ namespace FSMS.Services
     {
         private readonly IStateManager _persistenceHelper;
         private readonly IProfileManager _profileManager;
+        private readonly IEventLoggingService _eventLoggingService;
 
-        public FileManagementService(IStateManager persistenceHelper, IProfileManager profileManager)
+        public FileManagementService(IStateManager persistenceHelper,
+            IProfileManager profileManager,
+            IEventLoggingService eventLoggingService)
         {
             _persistenceHelper = persistenceHelper;
             _profileManager = profileManager;
+            _eventLoggingService = eventLoggingService;
         }
 
 
@@ -26,10 +30,17 @@ namespace FSMS.Services
 
             // Check for plan limits
             var currentPlan = _profileManager.GetCurrentPlan();
-            if (GetTotalNumberOfFiles() >= currentPlan.MaxFiles || totalSizeAfterAdding >
-                currentPlan.MaxStorageInMb * 1024 * 1024)
+            if (GetTotalNumberOfFiles() >= currentPlan.MaxFiles)
             {
                 Console.WriteLine("Cannot add file. Exceeds the plan's limit.");
+                _eventLoggingService.LogLimitReached(LimitType.FilesAmount);
+                return;
+            }
+
+            if (totalSizeAfterAdding > currentPlan.MaxStorageInMb * 1024 * 1024)
+            {
+                Console.WriteLine("Cannot add file. Exceeds the plan's limit.");
+                _eventLoggingService.LogLimitReached(LimitType.Storage);
                 return;
             }
 
@@ -48,6 +59,7 @@ namespace FSMS.Services
             };
             currentProfileFiles.Add(file);
             _persistenceHelper.SaveState(currentProfile);
+            _eventLoggingService.LogFileAdded(file.Shortcut, file.Filename);
             Console.WriteLine($"File added successfully: {file.Shortcut}");
         }
 
@@ -60,6 +72,7 @@ namespace FSMS.Services
             {
                 currentProfileFiles.Remove(file);
                 Console.WriteLine($"File removed: {shortcut}");
+                _eventLoggingService.LogFileRemoved(shortcut, file.Filename);
             }
             else
             {
