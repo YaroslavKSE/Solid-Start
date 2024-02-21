@@ -1,6 +1,4 @@
-﻿using FSMS.Core.Interfaces;
-
-namespace FSMS.Core.Models
+﻿namespace FSMS.Core.Models
 {
     public class UserProfile
     {

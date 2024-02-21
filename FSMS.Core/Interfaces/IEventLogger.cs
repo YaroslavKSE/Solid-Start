@@ -1,4 +1,4 @@
-﻿using FSMS.Core.Models;
+﻿using FSMS.Core.Events;
 
 namespace FSMS.Core.Interfaces;
 

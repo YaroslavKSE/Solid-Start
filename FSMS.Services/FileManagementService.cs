@@ -1,5 +1,6 @@
 ﻿using FSMS.Core.Interfaces;
 using FSMS.Core.Models;
+using FSMS.Services.Events;
 
 namespace FSMS.Services
 {
@@ -33,14 +34,14 @@ namespace FSMS.Services
             if (GetTotalNumberOfFiles() >= currentPlan.MaxFiles)
             {
                 Console.WriteLine("Cannot add file. Exceeds the plan's limit.");
-                _eventLoggingService.LogLimitReached(LimitType.FilesAmount);
+                _eventLoggingService.LogEvent(new LimitReachedEventLogEntry(LimitType.FilesAmount));
                 return;
             }
 
             if (totalSizeAfterAdding > currentPlan.MaxStorageInMb * 1024 * 1024)
             {
                 Console.WriteLine("Cannot add file. Exceeds the plan's limit.");
-                _eventLoggingService.LogLimitReached(LimitType.Storage);
+                _eventLoggingService.LogEvent(new LimitReachedEventLogEntry(LimitType.Storage));
                 return;
             }
 
@@ -59,7 +60,7 @@ namespace FSMS.Services
             };
             currentProfileFiles.Add(file);
             _persistenceHelper.SaveState(currentProfile);
-            _eventLoggingService.LogFileAdded(file.Shortcut, file.Filename);
+            _eventLoggingService.LogEvent(new FileAddedEventLogEntry(file.Shortcut, file.Filename));
             Console.WriteLine($"File added successfully: {file.Shortcut}");
         }
 
@@ -72,7 +73,7 @@ namespace FSMS.Services
             {
                 currentProfileFiles.Remove(file);
                 Console.WriteLine($"File removed: {shortcut}");
-                _eventLoggingService.LogFileRemoved(shortcut, file.Filename);
+                _eventLoggingService.LogEvent(new FileRemovedEventLogEntry(file.Shortcut, file.Filename));
             }
             else
             {

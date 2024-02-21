@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
+using FSMS.Core.Events;
 using FSMS.Core.Interfaces;
-using FSMS.Core.Models;
 
 namespace FSMS.Services;
 

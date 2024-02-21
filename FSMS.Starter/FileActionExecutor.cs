@@ -1,4 +1,5 @@
 ﻿using FSMS.Core.Interfaces;
+using FSMS.Services.Events;
 using FSMS.Services.Factories;
 
 public class FileActionExecutor : IFileActionExecutor
@@ -23,7 +24,7 @@ public class FileActionExecutor : IFileActionExecutor
             {
                 handler.Execute(filePath);
                 actionExecuted = true;
-                _eventLoggingService.LogFileActionInvoked(shortcut, actionName);
+                _eventLoggingService.LogEvent(new FileActionInvokedEventLogEntry(shortcut, actionName));
                 break;
             }
         }
