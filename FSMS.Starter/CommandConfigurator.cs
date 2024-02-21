@@ -107,7 +107,8 @@ public class CommandConfigurator // use DI container.
             }
 
             // Use the new ExecuteFileAction method to dynamically execute the action
-            fileActionExecutor.ExecuteFileAction(actionName, file.Path, file.Shortcut);
+            fileActionExecutor.ExecuteFileAction(actionName, file.Path, 
+                file.Shortcut, profileManager.GetCurrentProfile().PlanName);
         });
 
         var changePlanCommand = new Command("change_plan", "Change the user's current plan")

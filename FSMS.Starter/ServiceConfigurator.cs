@@ -27,6 +27,7 @@ public class ServiceConfigurator
         _container.Register<IFileManagementService, FileManagementService>(Scope.Singleton);
         _container.Register<IFileActionExecutor, FileActionExecutor>(Scope.Singleton);
         _container.Register<IFileActionFactory, FileActionFactory>(Scope.Singleton);
+        _container.Register<IPlanRestrictionChecker, PlanActionRestrictionService>(Scope.Singleton);
     }
 
     public void RegisterFileActions()

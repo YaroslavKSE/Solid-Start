@@ -2,5 +2,5 @@
 
 public interface IFileActionExecutor
 {
-    void ExecuteFileAction(string actionName, string filePath, string shortcut);
+    void ExecuteFileAction(string actionName, string filePath, string shortcut, string planName);
 }
