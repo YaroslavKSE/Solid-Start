@@ -4,16 +4,9 @@ using FSMS.Core.Interfaces;
 namespace FSMS.Services.FileActions;
 
 [FileAction("summary", ".txt")]
-public class SummarizeFileAction : IFileAction
+public class SummarizeFileAction() : FileActionBase("summary", ".txt")
 {
-    public bool CanHandle(string actionName, string filePath)
-    {
-        var extension = Path.GetExtension(filePath);
-        return actionName.Equals("summary", StringComparison.OrdinalIgnoreCase) &&
-               extension.Equals(".txt", StringComparison.OrdinalIgnoreCase);
-    }
-
-    public void Execute(string filePath)
+    public override void Execute(string filePath)
     {
         var content = File.ReadAllText(filePath);
         // Example logic for summarizing text files

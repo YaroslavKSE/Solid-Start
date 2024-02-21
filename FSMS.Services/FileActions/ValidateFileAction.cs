@@ -5,16 +5,9 @@ using FSMS.Core.Interfaces;
 namespace FSMS.Services.FileActions;
 
 [FileAction("validate", ".csv")]
-public class ValidateCsvFileAction : IFileAction
+public class ValidateCsvFileAction() : FileActionBase("validate", ".csv")
 {
-    public bool CanHandle(string actionName, string filePath)
-    {
-        var extension = Path.GetExtension(filePath);
-        return actionName.Equals("validate", StringComparison.OrdinalIgnoreCase) &&
-               extension.Equals(".csv", StringComparison.OrdinalIgnoreCase);
-    }
-
-    public void Execute(string filePath)
+    public override void Execute(string filePath)
     {
         try
         {
@@ -36,16 +29,9 @@ public class ValidateCsvFileAction : IFileAction
 }
 
 [FileAction("validate", ".json")]
-public class ValidateJsonFileAction : IFileAction
+public class ValidateJsonFileAction() : FileActionBase("validate", ".json")
 {
-    public bool CanHandle(string actionName, string filePath)
-    {
-        var extension = Path.GetExtension(filePath);
-        return actionName.Equals("validate", StringComparison.OrdinalIgnoreCase) &&
-               extension.Equals(".json", StringComparison.OrdinalIgnoreCase);
-    }
-
-    public void Execute(string filePath)
+    public override void Execute(string filePath)
     {
         try
         {
