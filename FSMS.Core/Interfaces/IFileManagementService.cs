@@ -8,7 +8,7 @@ namespace FSMS.Core.Interfaces
         void RemoveFile(string shortcut);
         IEnumerable<FileModel> ListFiles();
         FileModel GetFileByShortcut(string shortcut);
-        int GetTotalNumberOfFiles(); 
-        long GetTotalSizeOfFiles(); 
+        int GetTotalNumberOfFiles();
+        long GetTotalSizeOfFiles();
     }
 }

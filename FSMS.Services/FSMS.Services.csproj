@@ -8,7 +8,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\FSMS.Core\FSMS.Core.csproj" />
+        <ProjectReference Include="..\DI.Core\DI.Core.csproj"/>
+        <ProjectReference Include="..\FSMS.Core\FSMS.Core.csproj"/>
     </ItemGroup>
 
 </Project>

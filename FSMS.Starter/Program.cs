@@ -1,7 +1,9 @@
 ﻿using System.CommandLine;
 using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
+using DI.Core;
 using FSMS.Core.Interfaces;
+using FSMS.Services.Factories;
 
 namespace FSMS.Starter;
 
@@ -9,16 +11,25 @@ internal static class Program
 {
     static async Task Main(string[] args)
     {
-        // Configure services using the new ServiceConfiguration class
-        ServiceConfigurator.ConfigureServices();
+        // Configure services 
+        var diContainer = new DiContainer();
+        var serviceConfigurator = new ServiceConfigurator(diContainer);
+
+        serviceConfigurator.ConfigureServices();
+        serviceConfigurator.RegisterFileActions();
 
         // Resolve services
-        var fileManagementService = ServiceConfigurator.Resolve<IFileManagementService>();
-        var profileManager = ServiceConfigurator.Resolve<IProfileManager>();
+        var profileManager = diContainer.Resolve<IProfileManager>();
+        var fileManagementService = diContainer.Resolve<IFileManagementService>();
+
+        var logger = diContainer.Resolve<IEventLoggingService>();
+        var factory = new FileActionFactory(diContainer);
+
+        var actionExecutor = new FileActionExecutor(factory, logger);
 
         // Setup commands
         var rootCommand = new RootCommand("File Management System");
-        CommandConfigurator.ConfigureCommands(rootCommand, fileManagementService, profileManager);
+        CommandConfigurator.ConfigureCommands(rootCommand, fileManagementService, profileManager, actionExecutor);
 
         // Setup a command line builder and parser
         var commandLineBuilder = new CommandLineBuilder(rootCommand)

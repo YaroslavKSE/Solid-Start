@@ -2,14 +2,14 @@
 using System.CommandLine.NamingConventionBinder;
 using FSMS.Core.Helpers;
 using FSMS.Core.Interfaces;
-using FSMS.Services;
 
 namespace FSMS.Starter;
+
 // Rework, maybe use annotations, or reflections
 public class CommandConfigurator // use DI container. 
 {
     public static void ConfigureCommands(RootCommand rootCommand, IFileManagementService fileManagementService,
-        IProfileManager profileManager)
+        IProfileManager profileManager, IFileActionExecutor fileActionExecutor)
     {
         var addCommand = new Command("add", "Add a file to the system")
         {
@@ -29,7 +29,7 @@ public class CommandConfigurator // use DI container.
         };
 
 
-        removeCommand.Handler = CommandHandler.Create<string>( shortcut =>
+        removeCommand.Handler = CommandHandler.Create<string>(shortcut =>
         {
             if (!profileManager.EnsureLoggedIn()) return;
             fileManagementService.RemoveFile(shortcut);
@@ -48,10 +48,7 @@ public class CommandConfigurator // use DI container.
                     return;
                 }
 
-                foreach (var file in fileModels)
-                {
-                    Console.WriteLine($"{file.Shortcut} - {file.Path}");
-                }
+                foreach (var file in fileModels) Console.WriteLine($"{file.Shortcut} - {file.Path}");
             })
         };
 
@@ -64,10 +61,10 @@ public class CommandConfigurator // use DI container.
         var optionsCommand =
             new Command("options", "Show a list of available actions to perform on the specified file")
             {
-                new Argument<string>("shortcut", "The shortcut name of the file"),
+                new Argument<string>("shortcut", "The shortcut name of the file")
             };
 
-        optionsCommand.Handler = CommandHandler.Create<string>((shortcut) =>
+        optionsCommand.Handler = CommandHandler.Create<string>(shortcut =>
         {
             if (!profileManager.EnsureLoggedIn()) return;
 
@@ -98,15 +95,6 @@ public class CommandConfigurator // use DI container.
             new Argument<string>("actionName", "The action to perform"),
             new Argument<string>("shortcut", "The shortcut name of the file")
         };
-        var changePlanCommand = new Command("change_plan", "Change the user's current plan")
-        {
-            new Argument<string>("newPlanName", "The name of the new plan to switch to")
-        };
-        changePlanCommand.Handler = CommandHandler.Create<string>(profileManager.ChangeUserPlan);
-
-        rootCommand.AddCommand(changePlanCommand);
-
-        
         actionCommand.Handler = CommandHandler.Create<string, string>((actionName, shortcut) =>
         {
             if (!profileManager.EnsureLoggedIn()) return;
@@ -118,52 +106,22 @@ public class CommandConfigurator // use DI container.
                 return;
             }
 
-            var fileAction = FileActionFactory.GetFileAction(file.Path);
-
-            switch (actionName.ToLower())
-            {
-                case "info":
-                    fileAction.ViewInfo(file.Path);
-                    break;
-                case "print":
-                    fileAction.Print(file.Path);
-                    break;
-                case "summary":
-                    if (fileAction is TextFileAction action)
-                    {
-                        action.Summarize(file.Path);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Summary action is not supported for this file type.");
-                    }
-
-                    break;
-                case "validate":
-                    switch (fileAction)
-                    {
-                        case CsvFileAction csvFileAction:
-                            csvFileAction.Validate(file.Path);
-                            break;
-                        case JsonFileAction jsonFileAction:
-                            jsonFileAction.Validate(file.Path);
-                            break;
-                        default:
-                            Console.WriteLine("Validate action is not supported for this file type.");
-                            break;
-                    }
-
-                    break;
-                default:
-                    Console.WriteLine("Unknown action.");
-                    break;
-            }
+            // Use the new ExecuteFileAction method to dynamically execute the action
+            fileActionExecutor.ExecuteFileAction(actionName, file.Path, file.Shortcut);
         });
+
+        var changePlanCommand = new Command("change_plan", "Change the user's current plan")
+        {
+            new Argument<string>("newPlanName", "The name of the new plan to switch to")
+        };
+        changePlanCommand.Handler = CommandHandler.Create<string>(profileManager.ChangeUserPlan);
+
         rootCommand.AddCommand(addCommand);
         rootCommand.AddCommand(removeCommand);
         rootCommand.AddCommand(listCommand);
         rootCommand.AddCommand(optionsCommand);
         rootCommand.AddCommand(actionCommand);
         rootCommand.AddCommand(loginCommand);
+        rootCommand.AddCommand(changePlanCommand);
     }
 }

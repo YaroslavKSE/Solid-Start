@@ -2,11 +2,12 @@
 using FSMS.Core.Interfaces;
 using FSMS.Core.Models;
 
-namespace FSMS.Core.Helpers 
+namespace FSMS.Core.Helpers
 {
     public class PersistenceHelper : IStateManager
     {
         private const string StateFilesDirectory = "StateFiles";
+
         public PersistenceHelper()
         {
             // Ensure the directory exists
@@ -30,14 +31,14 @@ namespace FSMS.Core.Helpers
             if (!File.Exists(stateFilePath))
             {
                 // Return a new profile with default settings if no saved state exists
-                return new UserProfile { ProfileName = profileName, PlanName = "Basic", Files = new List<FileModel>() };
+                return new UserProfile {ProfileName = profileName, PlanName = "Basic", Files = new List<FileModel>()};
             }
 
             var jsonString = File.ReadAllText(stateFilePath);
-            return JsonSerializer.Deserialize<UserProfile>(jsonString) ?? 
-                   new UserProfile { ProfileName = profileName, PlanName = "Basic", Files = new List<FileModel>() };
+            return JsonSerializer.Deserialize<UserProfile>(jsonString) ??
+                   new UserProfile {ProfileName = profileName, PlanName = "Basic", Files = new List<FileModel>()};
         }
-        
+
         // Generates a unique file path for each profile
         private string GetStateFilePath(string profileName)
         {
