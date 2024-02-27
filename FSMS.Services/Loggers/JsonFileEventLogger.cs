@@ -2,7 +2,7 @@
 using FSMS.Core.Events;
 using FSMS.Core.Interfaces;
 
-namespace FSMS.Services;
+namespace FSMS.Services.Loggers;
 
 public class JsonFileEventLogger : IEventLogger
 {

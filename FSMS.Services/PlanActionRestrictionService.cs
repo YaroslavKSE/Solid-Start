@@ -22,6 +22,7 @@ public class PlanActionRestrictionService : IPlanRestrictionChecker
         {
             return true; // All actions are allowed for Gold users.
         }
+
         return !_restrictions.GoldOnlyActions.Contains(actionName);
     }
 }

@@ -1,6 +1,6 @@
 ﻿{
   "GoldOnlyActions": [
     "print",
-    "summary"
+    "validate"
   ]
 }

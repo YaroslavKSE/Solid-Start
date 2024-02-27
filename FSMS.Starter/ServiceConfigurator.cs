@@ -5,6 +5,7 @@ using FSMS.Core.Helpers;
 using FSMS.Core.Interfaces;
 using FSMS.Services;
 using FSMS.Services.Factories;
+using FSMS.Services.Loggers;
 
 namespace FSMS.Starter;
 
@@ -28,6 +29,8 @@ public class ServiceConfigurator
         _container.Register<IFileActionExecutor, FileActionExecutor>(Scope.Singleton);
         _container.Register<IFileActionFactory, FileActionFactory>(Scope.Singleton);
         _container.Register<IPlanRestrictionChecker, PlanActionRestrictionService>(Scope.Singleton);
+        _container.Register<ILimitCheckerService, LimitCheckerService>(Scope.Singleton);
+        _container.Register<ICurrentProfileProvider, CurrentProfileProvider>(Scope.Singleton);
     }
 
     public void RegisterFileActions()

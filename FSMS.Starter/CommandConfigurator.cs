@@ -107,7 +107,7 @@ public class CommandConfigurator // use DI container.
             }
 
             // Use the new ExecuteFileAction method to dynamically execute the action
-            fileActionExecutor.ExecuteFileAction(actionName, file.Path, 
+            fileActionExecutor.ExecuteFileAction(actionName, file.Path,
                 file.Shortcut, profileManager.GetCurrentProfile().PlanName);
         });
 
