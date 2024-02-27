@@ -25,7 +25,9 @@ internal static class Program
         var logger = diContainer.Resolve<IEventLoggingService>();
         var factory = new FileActionFactory(diContainer);
 
-        var actionExecutor = new FileActionExecutor(factory, logger);
+        var planRestrictionService = diContainer.Resolve<IPlanRestrictionChecker>();
+
+        var actionExecutor = new FileActionExecutor(factory, logger, planRestrictionService);
 
         // Setup commands
         var rootCommand = new RootCommand("File Management System");

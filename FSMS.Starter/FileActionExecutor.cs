@@ -6,15 +6,24 @@ public class FileActionExecutor : IFileActionExecutor
 {
     private readonly FileActionFactory _fileActionFactory;
     private readonly IEventLoggingService _eventLoggingService;
+    private readonly IPlanRestrictionChecker _planActionRestrictionService;
 
-    public FileActionExecutor(FileActionFactory fileActionFactory, IEventLoggingService eventLoggingService)
+    public FileActionExecutor(FileActionFactory fileActionFactory, IEventLoggingService eventLoggingService,
+        IPlanRestrictionChecker planActionRestrictionService)
     {
         _fileActionFactory = fileActionFactory;
         _eventLoggingService = eventLoggingService;
+        _planActionRestrictionService = planActionRestrictionService;
     }
 
-    public void ExecuteFileAction(string actionName, string filePath, string shortcut)
+    public void ExecuteFileAction(string actionName, string filePath, string shortcut, string userPlan)
     {
+        if (!_planActionRestrictionService.IsActionAllowedForPlan(actionName, userPlan))
+        {
+            Console.WriteLine("This action is restricted to certain plan users.");
+            return;
+        }
+
         var actionHandlers = _fileActionFactory.GetFileActions();
 
         bool actionExecuted = false;

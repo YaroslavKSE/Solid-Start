@@ -7,48 +7,33 @@ namespace FSMS.Services
     public class FileManagementService : IFileManagementService
     {
         private readonly IStateManager _persistenceHelper;
-        private readonly IProfileManager _profileManager;
+
+        private readonly ICurrentProfileProvider _profileProvider;
         private readonly IEventLoggingService _eventLoggingService;
+        private readonly ILimitCheckerService _limitCheckerService;
 
         public FileManagementService(IStateManager persistenceHelper,
-            IProfileManager profileManager,
-            IEventLoggingService eventLoggingService)
+            IEventLoggingService eventLoggingService, ILimitCheckerService limitCheckerService,
+            ICurrentProfileProvider profileProvider)
         {
             _persistenceHelper = persistenceHelper;
-            _profileManager = profileManager;
             _eventLoggingService = eventLoggingService;
+            _limitCheckerService = limitCheckerService;
+            _profileProvider = profileProvider;
         }
 
 
         public void AddFile(string filename, string? shortcut = null)
         {
             // Access the current profile's files
-            var currentProfile = _profileManager.GetCurrentProfile();
-            var currentProfileFiles = currentProfile?.Files;
 
-            var newFileSize = new FileInfo(filename).Length; // Get the size of the new file
-            var totalSizeAfterAdding = GetTotalSizeOfFiles() + newFileSize;
+            var currentProfile = _profileProvider.GetCurrentProfile();
+            var currentProfileFiles = _profileProvider.GetCurrentProfileFiles();
 
-            // Check for plan limits
-            var currentPlan = _profileManager.GetCurrentPlan();
-            if (GetTotalNumberOfFiles() >= currentPlan.MaxFiles)
+            if (!_limitCheckerService.CanAddFile(filename, shortcut, out string reason))
             {
-                Console.WriteLine("Cannot add file. Exceeds the plan's limit.");
-                _eventLoggingService.LogEvent(new LimitReachedEventLogEntry(LimitType.FilesAmount));
-                return;
-            }
-
-            if (totalSizeAfterAdding > currentPlan.MaxStorageInMb * 1024 * 1024)
-            {
-                Console.WriteLine("Cannot add file. Exceeds the plan's limit.");
-                _eventLoggingService.LogEvent(new LimitReachedEventLogEntry(LimitType.Storage));
-                return;
-            }
-
-            // Check if the file already exists in the list
-            if (currentProfileFiles != null && currentProfileFiles.Any(f => f.Shortcut == (shortcut ?? filename)))
-            {
-                Console.WriteLine("A file with this shortcut already exists.");
+                Console.WriteLine(reason);
+                // Log the event based on the reason, if necessary
                 return;
             }
 
@@ -66,8 +51,8 @@ namespace FSMS.Services
 
         public void RemoveFile(string shortcut)
         {
-            var currentProfile = _profileManager.GetCurrentProfile();
-            var currentProfileFiles = currentProfile.Files;
+            var currentProfile = _profileProvider.GetCurrentProfile();
+            var currentProfileFiles = _profileProvider.GetCurrentProfileFiles();
             var file = currentProfileFiles.FirstOrDefault(f => f.Shortcut == shortcut);
             if (file != null)
             {
@@ -85,27 +70,29 @@ namespace FSMS.Services
 
         public IEnumerable<FileModel> ListFiles()
         {
-            var files = _profileManager.GetCurrentProfile().Files;
-            return files;
+            var currentProfileFiles = _profileProvider.GetCurrentProfileFiles();
+            return currentProfileFiles;
         }
 
         public FileModel GetFileByShortcut(string shortcut)
         {
             // Access the current profile's files
-            return _profileManager.GetCurrentProfile().Files.FirstOrDefault(f => f.Shortcut == shortcut);
+            var currentProfileFiles = _profileProvider.GetCurrentProfileFiles();
+            var fileByShortcut = currentProfileFiles.FirstOrDefault(f => f.Shortcut == shortcut);
+            return fileByShortcut;
         }
 
         public int GetTotalNumberOfFiles()
         {
-            var currentProfile = _profileManager.GetCurrentProfile();
-            return currentProfile.Files.Count;
+            var currentProfileFiles = _profileProvider.GetCurrentProfileFiles();
+            return currentProfileFiles.Count;
         }
 
         public long GetTotalSizeOfFiles()
         {
-            var currentProfile = _profileManager.GetCurrentProfile();
+            var currentProfileFiles = _profileProvider.GetCurrentProfileFiles();
             // Assuming FileModel has a Size property in bytes
-            return currentProfile.Files.Sum(file => file.Path.Length);
+            return currentProfileFiles.Sum(file => file.Path.Length);
         }
     }
 }

@@ -12,7 +12,7 @@ public abstract class FileActionBase : IFileAction
         _supportedAction = supportedAction;
         _supportedExtension = supportedExtension;
     }
-    
+
     public bool CanHandle(string actionName, string filePath)
     {
         var extension = Path.GetExtension(filePath);
@@ -21,5 +21,4 @@ public abstract class FileActionBase : IFileAction
     }
 
     public abstract void Execute(string filePath);
-
 }

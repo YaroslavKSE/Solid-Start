@@ -26,7 +26,9 @@ namespace FSMS.Services
                 profile = new UserProfile {ProfileName = profileName, Files = new List<FileModel>()};
                 // Load the profile's files from persistent storage
                 var loadedFiles = _persistenceHelper.LoadState(profileName).Files;
+                var profilePlan = _persistenceHelper.LoadState(profileName).PlanName;
                 profile.Files.AddRange(loadedFiles);
+                profile.PlanName = profilePlan;
                 _profiles.Add(profile);
             }
 
